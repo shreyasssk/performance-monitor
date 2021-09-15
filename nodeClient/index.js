@@ -30,12 +30,24 @@ socket.on('connect', () => {
 		// System Metrics
 		performanceData().then((data) => {
 			data.macA = macA;
+			let x = {};
+			let systemMac = { ...x };
+			systemMac[data.mac] = data;
+			// console.log(systemMac);
 			socket.emit('perfData', data);
 		});
 
+		// 00123: {
+		// 	systemd: 'sdfs',
+		// 	dsfsdfs: 'dsfdsfs'
+		// }
+
 		// Process Metrics
 		processData().then((data) => {
-			socket.emit('processData', data);
+			let x = {};
+			let systemMac = { ...x };
+			systemMac[macA] = data;
+			socket.emit('processData', systemMac);
 		});
 	}, 1000);
 

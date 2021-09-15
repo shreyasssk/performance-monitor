@@ -1,20 +1,62 @@
-import { BrowserRouter, Route, Redirect } from 'react-router-dom';
-import NavBar from './NavBar';
-import SystemApp from './SystemApp';
+import React from 'react';
+import { Container, Row, Col } from 'shards-react';
 
-const App = () => {
-	return (
-		<div>
-			<BrowserRouter>
-				<NavBar />
-				<Route exact path="/">
-					<Redirect to="/system" />
-				</Route>
-				<Route to="/system" exact component={SystemApp} />
-				<Route to="/process" exact />
-			</BrowserRouter>
-		</div>
-	);
-};
+import socket from '../socket/socketConnection';
+import Dashboard from './Dashboard';
+
+class App extends React.Component {
+	constructor() {
+		super();
+		this.state = {
+			performanceData: {},
+		};
+	}
+
+	componentDidMount() {
+		this._fetchData = true;
+
+		if (this._fetchData) {
+			socket.on('data', (data) => {
+				const currentState = { ...this.state.performanceData };
+				currentState[data.macA] = data;
+				this.setState({
+					performanceData: currentState,
+				});
+			});
+		}
+	}
+
+	componentWillUnmount() {
+		this._fetchData = false;
+	}
+
+	render() {
+		let widgets = [];
+		const data = this.state.performanceData;
+		Object.entries(data).forEach(([key, value]) => {
+			// console.log(key);
+			widgets.push(<Dashboard key={key} data={value} />);
+		});
+		return (
+			<Container fluid className="main-content-container px-4">
+				<Row>
+					<Col className="col-lg mb-4">
+						<div
+							style={{
+								backgroundColor: 'rgb(255, 250, 250)',
+							}}
+							className="jumbotron card jumbotron-fluid"
+						>
+							<h1 className="display-4">
+								System Performance Metrics
+							</h1>
+						</div>
+						<div style={{ padding: '5px' }}>{widgets}</div>
+					</Col>
+				</Row>
+			</Container>
+		);
+	}
+}
 
 export default App;
