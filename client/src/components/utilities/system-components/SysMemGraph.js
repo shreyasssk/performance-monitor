@@ -58,6 +58,7 @@ class MemCpuGraph extends React.Component {
 		let memLoad = memUsage * 100;
 
 		const totalMemInGB = Math.floor((totalMem / 1073741824) * 100) / 100;
+		const usedMemInGB = Math.floor((usedMem / 1073741824) * 100) / 100;
 		const freeMemInGB = Math.floor((freeMem / 1073741824) * 100) / 100;
 
 		return (
@@ -73,9 +74,11 @@ class MemCpuGraph extends React.Component {
 				<h5>
 					{memWidgetId}
 					<br />
-					Total Mempry: {totalMemInGB}GB
+					<strong>Total Memory:</strong> {totalMemInGB}GB
 					<br />
-					Free Memory: {freeMemInGB}GB
+					<strong>Used Memory:</strong> {usedMemInGB}GB
+					<br />
+					<strong>Free Memory:</strong> {freeMemInGB}GB
 				</h5>
 			</div>
 		);

@@ -15,15 +15,15 @@ class App extends React.Component {
 	componentDidMount() {
 		this._fetchData = true;
 
-		if (this._fetchData) {
-			socket.on('data', (data) => {
-				const currentState = { ...this.state.performanceData };
-				currentState[data.macA] = data;
+		socket.on('data', (data) => {
+			const currentState = { ...this.state.performanceData };
+			currentState[data.macA] = data;
+			if (this._fetchData) {
 				this.setState({
 					performanceData: currentState,
 				});
-			});
-		}
+			}
+		});
 	}
 
 	componentWillUnmount() {
@@ -34,7 +34,6 @@ class App extends React.Component {
 		let widgets = [];
 		const data = this.state.performanceData;
 		Object.entries(data).forEach(([key, value]) => {
-			// console.log(key);
 			widgets.push(<Dashboard key={key} data={value} />);
 		});
 		return (

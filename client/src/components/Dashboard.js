@@ -19,18 +19,18 @@ class Dashboard extends React.Component {
 	componentDidMount() {
 		this._fetchData = true;
 
-		if (this._fetchData) {
-			socket.on('processData', (data) => {
+		socket.on('processData', (data) => {
+			if (this._fetchData) {
 				this.setState({
 					processData: data,
 				});
-			});
-		}
+			}
+		});
 	}
 
-	componentWillUnmount() {
-		this._fetchData = false;
-	}
+	// componentWillUnmount() {
+	// 	this._fetchData = false;
+	// }
 
 	toggle = (tab) => {
 		if (this.state.selected !== tab) this.setState({ selected: tab });
@@ -99,7 +99,7 @@ class Dashboard extends React.Component {
 		Object.entries(data).forEach(([key, value]) => {
 			if (key === macA) {
 				processWidget.push(
-					<ProcessApp keyValue={key} key={key} data={value} />
+					<ProcessApp status={isActive} key={key} data={value} />
 				);
 			}
 		});
