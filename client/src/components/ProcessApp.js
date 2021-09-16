@@ -5,6 +5,7 @@ import './utilities/process-components/processList.css';
 import ProcessDetail from './utilities/process-components/ProcessDetail';
 import ProcessCpuGraph from './utilities/process-components/ProcessCpuGraph';
 import ProcessMemGraph from './utilities/process-components/ProcessMemGraph';
+import socket from '../socket/socketConnection';
 
 class ProcessApp extends React.Component {
 	constructor(props) {
@@ -12,38 +13,55 @@ class ProcessApp extends React.Component {
 
 		this.state = {
 			selectedProcess: {},
+			processData: [],
 		};
 	}
 
 	// change onClick()
+	componentDidMount() {
+		this._fetchData = true;
+
+		socket.on('processData', (data) => {
+			const { macA } = this.props;
+			const yesData = data[macA];
+
+			if (this._fetchData && yesData !== undefined) {
+				this.setState({
+					processData: yesData,
+				});
+			}
+		});
+	}
+
+	componentWillUnmount() {
+		this._fetchData = false;
+	}
 
 	renderTable = () => {
-		const x = this.props.data;
+		const { processData } = this.state;
 
-		return x.map((i) => {
-			return (
-				<tr key={i.pid}>
-					<th className="col-3">{i.name}</th>
-					<td className="col-3">{i.cpu}</td>
-					<td className="col-3">{i.pmem}</td>
-					<td className="col-3">
-						{i.pid}
-						<button
-							className="btn table-button btn-dark btn-sm"
-							onClick={() =>
-								this.setState({ selectedProcess: i.pid })
-							}
-						>
-							more info
-						</button>
-					</td>
-				</tr>
-			);
-		});
+		return processData.map((i) => (
+			<tr key={i.pid}>
+				<th className="col-3">{i.name}</th>
+				<td className="col-3">{i.cpu}</td>
+				<td className="col-3">{i.pmem}</td>
+				<td className="col-3">
+					{i.pid}
+					<button
+						className="btn table-button btn-dark btn-sm"
+						onClick={() =>
+							this.setState({ selectedProcess: i.pid })
+						}
+					>
+						more info
+					</button>
+				</td>
+			</tr>
+		));
 	};
 
 	renderPage = () => {
-		if (!this.props.status) {
+		if (this.state.processData === undefined) {
 			return (
 				<div
 					style={{ backgroundColor: 'rgb(255, 250, 250)' }}
@@ -56,11 +74,11 @@ class ProcessApp extends React.Component {
 		}
 
 		return (
-			<div style={{ padding: '5px' }}>
+			<div>
 				<div className="card">
 					<div className="card-body">
-						<div style={{ overflowX: 'auto', overflowY: 'auto' }}>
-							<h4>Running Process List :</h4>
+						<h4>Running Process List :</h4>
+						<div className="container-fluid">
 							<div className="table-responsive">
 								<table className="table table-fixed">
 									<thead className="thead-dark">
@@ -90,9 +108,9 @@ class ProcessApp extends React.Component {
 	};
 
 	render() {
-		const { data } = this.props;
-		const { selectedProcess } = this.state;
-		var processInfo = data.filter((i) => {
+		const { macA } = this.props;
+		const { selectedProcess, processData } = this.state;
+		const processInfo = processData.filter((i) => {
 			return i.pid === selectedProcess;
 		});
 
