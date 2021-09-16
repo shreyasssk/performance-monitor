@@ -55,3 +55,7 @@ socket.on('connect', () => {
 		clearInterval(perfDataInterval);
 	});
 });
+
+socket.on('processInfo', (data) => {
+	console.log(data);
+});

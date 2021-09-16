@@ -1,9 +1,8 @@
 .table {
-    width: 100%;
-    border-collapse: collapse;
     overflow-x: auto;
     overflow: scroll;
 }
+
 
 .table-fixed tbody {
     height: 300px;

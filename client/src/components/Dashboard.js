@@ -5,32 +5,14 @@ import classnames from 'classnames';
 
 import SystemApp from './SystemApp';
 import ProcessApp from './ProcessApp';
-import socket from '../socket/socketConnection';
 
 class Dashboard extends React.Component {
 	constructor() {
 		super();
 		this.state = {
 			selected: 'System',
-			processData: {},
 		};
 	}
-
-	componentDidMount() {
-		this._fetchData = true;
-
-		socket.on('processData', (data) => {
-			if (this._fetchData) {
-				this.setState({
-					processData: data,
-				});
-			}
-		});
-	}
-
-	// componentWillUnmount() {
-	// 	this._fetchData = false;
-	// }
 
 	toggle = (tab) => {
 		if (this.state.selected !== tab) this.setState({ selected: tab });
@@ -94,16 +76,6 @@ class Dashboard extends React.Component {
 			);
 		}
 
-		let processWidget = [];
-		const data = this.state.processData;
-		Object.entries(data).forEach(([key, value]) => {
-			if (key === macA) {
-				processWidget.push(
-					<ProcessApp status={isActive} key={key} data={value} />
-				);
-			}
-		});
-
 		return (
 			<Container fluid className="main-content-container px-4">
 				<Row>
@@ -143,15 +115,10 @@ class Dashboard extends React.Component {
 									</Nav>
 									<TabContent activeTab={this.state.selected}>
 										<TabPane tabId="System">
-											{/* <SystemApp
-												infoData={info}
-												cpuData={cpu}
-												memData={mem}
-											/> */}
 											{renderPage()}
 										</TabPane>
 										<TabPane tabId="Process">
-											{processWidget}
+											<ProcessApp macA={macA} />
 										</TabPane>
 									</TabContent>
 								</div>
@@ -163,7 +130,5 @@ class Dashboard extends React.Component {
 		);
 	}
 }
-
-// {<SystemApp infoData={info} />}
 
 export default Dashboard;

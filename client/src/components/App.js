@@ -34,6 +34,7 @@ class App extends React.Component {
 		let widgets = [];
 		const data = this.state.performanceData;
 		Object.entries(data).forEach(([key, value]) => {
+			// console.log(value);
 			widgets.push(<Dashboard key={key} data={value} />);
 		});
 		return (

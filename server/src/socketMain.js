@@ -61,6 +61,10 @@ function socketMain(io, socket) {
 	socket.on('processData', (data) => {
 		io.to('ui').emit('processData', data);
 	});
+
+	socket.on('selectedProcess', (data) => {
+		io.emit('processInfo', data);
+	});
 }
 
 function checkAndAdd(data) {
