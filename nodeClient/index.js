@@ -29,11 +29,6 @@ socket.on('connect', () => {
 	let perfDataInterval = setInterval(() => {
 		// System Metrics
 		performanceData().then((data) => {
-			data.macA = macA;
-			let x = {};
-			let systemMac = { ...x };
-			systemMac[data.mac] = data;
-			// console.log(systemMac);
 			socket.emit('perfData', data);
 		});
 
@@ -54,8 +49,8 @@ socket.on('connect', () => {
 	socket.on('disconnect', () => {
 		clearInterval(perfDataInterval);
 	});
-});
 
-socket.on('processInfo', (data) => {
-	console.log(data);
+	socket.on(`${macA}`, (data) => {
+		console.log(data);
+	});
 });

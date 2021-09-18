@@ -4,10 +4,11 @@ const net = require('net');
 const socketio = require('socket.io');
 const io_redis = require('socket.io-redis');
 const farmhash = require('farmhash');
+const middleware = require('socketio-wildcard')();
 const socketMain = require('./socketMain');
 
 const PORT = 4000;
-const num_processes = require('os').cpus().length;
+const num_processes = require('os').cpus().length; // CPU CORES
 
 if (cluster.isMaster) {
 	// This stores our workers. We need to keep them to be able to reference
@@ -64,9 +65,10 @@ if (cluster.isMaster) {
 	// specify them explicitly unless you want to change them.
 	// redis-cli monitor.
 	io.adapter(io_redis({ host: 'localhost', port: 6379 }));
+	io.use(middleware);
 
 	io.on('connection', (socket) => {
-		socketMain(io, socket);
+		socketMain(io, socket, cluster.worker);
 		console.log(`Connected to worker: ${cluster.worker.id}`);
 	});
 

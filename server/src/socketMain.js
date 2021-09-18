@@ -14,8 +14,13 @@ const connectToDB = async () => {
 };
 connectToDB();
 
-function socketMain(io, socket) {
+function socketMain(io, socket, worker) {
 	let macA;
+
+	socket.on('*', (packet) => {
+		// console.log(packet);
+		// console.log(worker);
+	});
 
 	socket.on('clientAuth', (key) => {
 		if (key === '/hTF0uIyrOL4nibGP2UGQX5hGkUZKmq5Mg==') {
@@ -52,6 +57,7 @@ function socketMain(io, socket) {
 		macA = data.macA;
 		const mongooseResponse = await checkAndAdd(data);
 		console.log(mongooseResponse);
+		io.emit(`${macA}`, data);
 	});
 
 	socket.on('perfData', (data) => {
@@ -64,6 +70,7 @@ function socketMain(io, socket) {
 
 	socket.on('selectedProcess', (data) => {
 		io.emit('processInfo', data);
+		console.log(macA);
 	});
 }
 
