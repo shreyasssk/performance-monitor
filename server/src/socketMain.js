@@ -57,7 +57,9 @@ function socketMain(io, socket, worker) {
 		macA = data.macA;
 		const mongooseResponse = await checkAndAdd(data);
 		console.log(mongooseResponse);
-		io.emit(`${macA}`, data);
+		socket.on(`${macA}`, (processData) => {
+			io.to('ui').emit('processInfo', processData);
+		});
 	});
 
 	socket.on('perfData', (data) => {
@@ -68,8 +70,13 @@ function socketMain(io, socket, worker) {
 		io.to('ui').emit('processData', data);
 	});
 
-	socket.on('selectedProcess', (data) => {
-		io.emit('processInfo', data);
+	let customEvent = 'shreyas';
+
+	socket.on('systemInfo', (data) => {
+		macA = data.macA;
+		socket.on(`${macA}`, (processInfo) => {
+			io.to('ui').emit(`${macA}`, processInfo);
+		});
 		console.log(macA);
 	});
 }

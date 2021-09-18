@@ -23,6 +23,7 @@ socket.on('connect', () => {
 	performanceData().then((data) => {
 		data.macA = macA;
 		socket.emit('initPerfData', data);
+		socket.emit('systemInfo', data);
 	});
 
 	// start sending over data on interval
@@ -42,15 +43,15 @@ socket.on('connect', () => {
 			let x = {};
 			let systemMac = { ...x };
 			systemMac[macA] = data;
-			socket.emit('processData', systemMac);
+			socket.emit('processData', data);
+		});
+
+		processData().then((data) => {
+			socket.emit(`${macA}`, data);
 		});
 	}, 1000);
 
 	socket.on('disconnect', () => {
 		clearInterval(perfDataInterval);
-	});
-
-	socket.on(`${macA}`, (data) => {
-		console.log(data);
 	});
 });
