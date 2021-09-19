@@ -70,14 +70,22 @@ function socketMain(io, socket, worker) {
 		io.to('ui').emit('processData', data);
 	});
 
-	let customEvent = 'shreyas';
-
+	// creating a event based on 'macA' so that
+	// client can communicate to the system based on
+	// their mac address.
 	socket.on('systemInfo', (data) => {
 		macA = data.macA;
+
+		// receive process details on an event with
+		// that system's 'macA'
 		socket.on(`${macA}`, (processInfo) => {
 			io.to('ui').emit(`${macA}`, processInfo);
 		});
-		console.log(macA);
+
+		// client sends data to nodeClient.
+		socket.on(`${macA}-client`, (pid) => {
+			io.emit(`${macA}-server`, pid);
+		});
 	});
 }
 

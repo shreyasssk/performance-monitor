@@ -30,7 +30,12 @@ socket.on('connect', () => {
 	let perfDataInterval = setInterval(() => {
 		// System Metrics
 		performanceData().then((data) => {
+			data.macA = macA;
+			let x = {};
+			let systemMac = { ...x };
+			systemMac[data.macA] = data;
 			socket.emit('perfData', data);
+			socket.emit(`${macA}-client`, data.macA);
 		});
 
 		// 00123: {
@@ -50,6 +55,10 @@ socket.on('connect', () => {
 			socket.emit(`${macA}`, data);
 		});
 	}, 1000);
+
+	socket.on(`${macA}-server`, (data) => {
+		// console.log(data);
+	});
 
 	socket.on('disconnect', () => {
 		clearInterval(perfDataInterval);
