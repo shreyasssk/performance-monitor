@@ -20,14 +20,12 @@ class ProcessApp extends React.Component {
 	// change onClick()
 	componentDidMount() {
 		this._fetchData = true;
+		const { macA } = this.props;
 
-		socket.on('processData', (data) => {
-			const { macA } = this.props;
-			const yesData = data[macA];
-
-			if (this._fetchData && yesData !== undefined) {
+		socket.on(macA, (data) => {
+			if (this._fetchData) {
 				this.setState({
-					processData: yesData,
+					processData: data,
 				});
 			}
 		});
@@ -110,6 +108,7 @@ class ProcessApp extends React.Component {
 	render() {
 		const { macA } = this.props;
 		const { selectedProcess, processData } = this.state;
+		// console.log(processData);
 		const processInfo = processData.filter((i) => {
 			return i.pid === selectedProcess;
 		});
@@ -120,7 +119,7 @@ class ProcessApp extends React.Component {
 					<Row>
 						<Col className="col-lg mb-6">{this.renderPage()}</Col>
 						<Col className="col-lg-4 mb-2">
-							<ProcessDetail data={processInfo} />
+							<ProcessDetail macA={macA} data={processInfo} />
 						</Col>
 					</Row>
 					<Row>

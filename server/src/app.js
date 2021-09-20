@@ -65,7 +65,6 @@ if (cluster.isMaster) {
 	// specify them explicitly unless you want to change them.
 	// redis-cli monitor.
 	io.adapter(io_redis({ host: 'localhost', port: 6379 }));
-	io.use(middleware);
 
 	io.on('connection', (socket) => {
 		socketMain(io, socket, cluster.worker);

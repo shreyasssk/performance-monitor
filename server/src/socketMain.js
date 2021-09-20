@@ -17,11 +17,6 @@ connectToDB();
 function socketMain(io, socket, worker) {
 	let macA;
 
-	socket.on('*', (packet) => {
-		// console.log(packet);
-		// console.log(worker);
-	});
-
 	socket.on('clientAuth', (key) => {
 		if (key === '/hTF0uIyrOL4nibGP2UGQX5hGkUZKmq5Mg==') {
 			// valid nodeClient
@@ -54,13 +49,16 @@ function socketMain(io, socket, worker) {
 	});
 
 	socket.on('initPerfData', async (data) => {
+		this.macA = data.macA;
 		macA = data.macA;
 		const mongooseResponse = await checkAndAdd(data);
 		console.log(mongooseResponse);
-		socket.on(`${macA}`, (processData) => {
-			io.to('ui').emit('processInfo', processData);
+		socket.on(macA, (processData) => {
+			io.to('ui').emit(macA, processData);
 		});
 	});
+
+	// console.log(`Mac address: ${this.macA}`);
 
 	socket.on('perfData', (data) => {
 		io.to('ui').emit('data', data);
@@ -74,18 +72,28 @@ function socketMain(io, socket, worker) {
 	// client can communicate to the system based on
 	// their mac address.
 	socket.on('systemInfo', (data) => {
-		macA = data.macA;
+		console.log(data);
+		macA = `${data.macA}-client`;
+		// console.log(typeof macA);
 
 		// receive process details on an event with
 		// that system's 'macA'
-		socket.on(`${macA}`, (processInfo) => {
-			io.to('ui').emit(`${macA}`, processInfo);
-		});
+		// socket.on(macA, (processInfo) => {
+		// 	// io.to('ui').emit(`${macA}`, processInfo);
+		// 	console.log('processInfo');
+		// });
+
+		io.emit(macA, data);
 
 		// client sends data to nodeClient.
-		socket.on(`${macA}-client`, (pid) => {
-			io.emit(`${macA}-server`, pid);
-		});
+		// await socket.on(`${macA}-client`, (pid) => {
+		// 	console.log(`Received process termination request from: ${macA}`);
+		// 	io.emit(`${macA}-server`, pid);
+		// });
+	});
+
+	socket.on('test', (data) => {
+		io.emit('shreyas', data);
 	});
 }
 

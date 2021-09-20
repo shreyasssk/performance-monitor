@@ -3,27 +3,27 @@ const io = require('socket.io-client');
 let socket = io('http://127.0.0.1:4000');
 const performanceData = require('./components/performanceData');
 const processData = require('./components/processData');
+const processTerminate = require('./components/terminateProcess');
+
+// identify machine for unique marking, use mac address.
+const nI = os.networkInterfaces();
+let macA;
+
+// loop through all the network-interfaces of this machine
+// and find non-internal mac address
+for (let key in nI) {
+	if (!nI[key][0].internal) {
+		macA = nI[key][0].mac;
+		break;
+	}
+}
 
 socket.on('connect', () => {
 	console.log('Connected to socket server!');
 
-	// identify machine for unique marking, use mac address.
-	const nI = os.networkInterfaces();
-	let macA;
-
-	// loop through all the network-interfaces of this machine
-	// and find non-internal mac address
-	for (let key in nI) {
-		if (!nI[key][0].internal) {
-			macA = nI[key][0].mac;
-			break;
-		}
-	}
-
 	performanceData().then((data) => {
 		data.macA = macA;
 		socket.emit('initPerfData', data);
-		socket.emit('systemInfo', data);
 	});
 
 	// start sending over data on interval
@@ -35,7 +35,6 @@ socket.on('connect', () => {
 			let systemMac = { ...x };
 			systemMac[data.macA] = data;
 			socket.emit('perfData', data);
-			socket.emit(`${macA}-client`, data.macA);
 		});
 
 		// 00123: {
@@ -52,15 +51,17 @@ socket.on('connect', () => {
 		});
 
 		processData().then((data) => {
-			socket.emit(`${macA}`, data);
+			socket.emit(macA, data);
 		});
 	}, 1000);
-
-	socket.on(`${macA}-server`, (data) => {
-		// console.log(data);
-	});
 
 	socket.on('disconnect', () => {
 		clearInterval(perfDataInterval);
 	});
+});
+
+const macB = `${macA}-client`;
+socket.on(macB, (data) => {
+	console.log(`Received process terminate request from: ${data.macA}`);
+	processTerminate(data.pid);
 });

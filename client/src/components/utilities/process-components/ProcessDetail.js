@@ -1,8 +1,10 @@
 import React from 'react';
+import { Button } from 'shards-react';
+import socket from '../../../socket/socketConnection';
 
 class ProcessDetail extends React.Component {
 	renderPage() {
-		const { data } = this.props;
+		const { data, macA } = this.props;
 
 		if (data.length === 0) {
 			return (
@@ -12,6 +14,12 @@ class ProcessDetail extends React.Component {
 				</div>
 			);
 		}
+
+		const onTerminate = async (e) => {
+			const pidValue = parseInt(e.target.value);
+			console.log(typeof pidValue, macA);
+			await socket.emit('systemInfo', { macA: macA, pid: pidValue });
+		};
 
 		return (
 			<div>
@@ -31,6 +39,14 @@ class ProcessDetail extends React.Component {
 						CPU: {data[0].cpu} % <br />
 					</span>
 				</p>
+				<Button
+					onClick={onTerminate}
+					value={data[0].pid}
+					size="lg"
+					theme="danger"
+				>
+					kill
+				</Button>
 			</div>
 		);
 	}
