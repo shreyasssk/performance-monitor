@@ -64,7 +64,13 @@ if (cluster.isMaster) {
 	// server is assumed to be on localhost:6379. You don't have to
 	// specify them explicitly unless you want to change them.
 	// redis-cli monitor.
-	io.adapter(io_redis({ host: 'localhost', port: 6379 }));
+	io.adapter(
+		io_redis({
+			host: process.env.REDIS_URI,
+			port: process.env.REDIS_PORT,
+			auth_pass: process.env.REDIS_PASSWORD,
+		})
+	);
 
 	io.on('connection', (socket) => {
 		socketMain(io, socket, cluster.worker);
