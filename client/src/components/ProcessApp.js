@@ -59,7 +59,7 @@ class ProcessApp extends React.Component {
 	};
 
 	renderPage = () => {
-		if (this.state.processData === undefined) {
+		if (this.state.processData === undefined || null) {
 			return (
 				<div
 					style={{ backgroundColor: 'rgb(255, 250, 250)' }}
@@ -109,16 +109,20 @@ class ProcessApp extends React.Component {
 		const { macA } = this.props;
 		const { selectedProcess, processData } = this.state;
 		// console.log(processData);
+		if (processData === null || undefined) {
+			return <div>Loading...</div>;
+		}
+
 		const processInfo = processData.filter((i) => {
 			return i.pid === selectedProcess;
 		});
-
 		return (
 			<Container fluid className="main-content-container px-4">
 				<div style={{ padding: '5px' }}>
 					<Row>
 						<Col className="col-lg mb-6">{this.renderPage()}</Col>
 						<Col className="col-lg-4 mb-2">
+							{macA}
 							<ProcessDetail macA={macA} data={processInfo} />
 						</Col>
 					</Row>

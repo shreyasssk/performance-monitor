@@ -19,26 +19,20 @@ class ProcessMemGraph extends React.Component {
 				},
 				dataLabels: {
 					name: {
-						fontSize: '22px',
+						fontSize: '20px',
 					},
 					value: {
 						fontSize: '16px',
+						label: 'Memory',
 						show: true,
 						formatter: function (val) {
 							return val + ' MB';
 						},
 					},
-					total: {
-						show: true,
-						label: 'Memory',
-						formatter: function (val) {
-							return 'in MB';
-						},
-					},
 				},
 			},
 		},
-		labels: ['Virtual Memory', 'Physical Memory'],
+		labels: ['Virtual Memory'],
 	};
 
 	render() {
@@ -48,18 +42,18 @@ class ProcessMemGraph extends React.Component {
 			return <div></div>;
 		}
 
-		var phyMem = parseInt(
-			Math.floor(Math.log(newData[0].pmem) / Math.log(1024))
-		);
-		var PhyMemInMB = Math.round(
-			newData[0].pmem / Math.pow(1024, phyMem),
-			2
-		);
+		// var phyMem = parseInt(
+		// 	Math.floor(Math.log(newData[0].pmem) / Math.log(1024))
+		// );
+		// var PhyMemInMB = Math.round(
+		// 	newData[0].pmem / Math.pow(1024, phyMem),
+		// 	2
+		// );
 		var virMem = parseInt(
 			Math.floor(Math.log(newData[0].vmem) / Math.log(1024))
 		);
 		var VirMemInMB = Math.round(
-			newData[0].vmem / Math.pow(1024, phyMem),
+			newData[0].vmem / Math.pow(1024, virMem),
 			2
 		);
 
@@ -69,7 +63,7 @@ class ProcessMemGraph extends React.Component {
 					<h5>Memory Graph</h5>
 					<Chart
 						options={this.options}
-						series={[PhyMemInMB, VirMemInMB]}
+						series={[VirMemInMB]}
 						type="radialBar"
 						height="350"
 					/>
