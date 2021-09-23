@@ -1,6 +1,6 @@
 const os = require('os');
 const io = require('socket.io-client');
-let socket = io('http://127.0.0.1:4000');
+let socket = io('https://socket-server-pm.herokuapp.com');
 const performanceData = require('./components/performanceData');
 const processData = require('./components/processData');
 const processTerminate = require('./components/terminateProcess');
