@@ -18,10 +18,7 @@ function socketMain(io, socket) {
 	let macA;
 
 	socket.on('clientAuth', (key) => {
-		if (key === '/hTF0uIyrOL4nibGP2UGQX5hGkUZKmq5Mg==') {
-			// valid nodeClient
-			socket.join('clients');
-		} else if (key === 'W7u7XZ2WCdf3U1N8T6dWLzI70Ug=') {
+		if (key === 'W7u7XZ2WCdf3U1N8T6dWLzI70Ug=') {
 			// valid ui client joined
 			socket.join('ui');
 			console.log('React client joined!');
