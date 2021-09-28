@@ -31,6 +31,12 @@ class ProcessApp extends React.Component {
 		});
 	}
 
+	onProcessSelect = async (e) => {
+		const { macA } = this.props;
+		await this.setState({ selectedProcess: e });
+		await socket.emit('selectedProcess', { macA: macA, pid: e });
+	};
+
 	componentWillUnmount() {
 		this._fetchData = false;
 	}
@@ -41,15 +47,16 @@ class ProcessApp extends React.Component {
 		return processData.map((i) => (
 			<tr key={i.pid}>
 				<th className="col-3">{i.name}</th>
-				<td className="col-3">{i.cpu}</td>
-				<td className="col-3">{i.pmem}</td>
+				<td className="col-3">{Math.round(i.cpu).toFixed(5)}</td>
+				<td className="col-3">{Math.round(i.pmem)}</td>
 				<td className="col-3">
 					{i.pid}
 					<button
 						className="btn table-button btn-dark btn-sm"
-						onClick={() =>
-							this.setState({ selectedProcess: i.pid })
-						}
+						value={i.pid}
+						onClick={() => {
+							this.onProcessSelect(i.pid);
+						}}
 					>
 						more info
 					</button>
@@ -85,10 +92,10 @@ class ProcessApp extends React.Component {
 												name
 											</th>
 											<th scope="col" className="col-3">
-												cpu
+												cpu (%)
 											</th>
 											<th scope="col" className="col-3">
-												memory
+												memory (kb)
 											</th>
 											<th scope="col" className="col-3">
 												pid
@@ -122,16 +129,22 @@ class ProcessApp extends React.Component {
 					<Row>
 						<Col className="col-lg mb-6">{this.renderPage()}</Col>
 						<Col className="col-lg-4 mb-2">
-							{macA}
+							{/* {macA} */}
 							<ProcessDetail macA={macA} data={processInfo} />
 						</Col>
 					</Row>
 					<Row>
 						<Col lg="6" md="6" sm="12" className="mb-4">
-							<ProcessCpuGraph newData={processInfo} />
+							<ProcessCpuGraph
+								macA={macA}
+								newData={processInfo}
+							/>
 						</Col>
 						<Col lg="6" md="6" sm="12" className="mb-4">
-							<ProcessMemGraph newData={processInfo} />
+							<ProcessMemGraph
+								macA={macA}
+								newData={processInfo}
+							/>
 						</Col>
 					</Row>
 				</div>

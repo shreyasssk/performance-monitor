@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Row, Col } from 'shards-react';
+// import { Container, Row, Col } from 'shards-react';
 import { TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
 import classnames from 'classnames';
 
@@ -77,56 +77,40 @@ class Dashboard extends React.Component {
 		}
 
 		return (
-			<Container fluid className="main-content-container px-4">
-				<Row>
-					<Col className="col-lg mb-4">
-						<div style={{ padding: '5px' }}>
-							<div className="card">
-								<div className="card-body">
-									<Nav tabs justified>
-										<NavItem>
-											<NavLink
-												className={classnames({
-													active:
-														this.state.selected ===
-														'System',
-												})}
-												onClick={() => {
-													this.toggle('System');
-												}}
-											>
-												System
-											</NavLink>
-										</NavItem>
-										<NavItem>
-											<NavLink
-												className={classnames({
-													active:
-														this.state.selected ===
-														'Process',
-												})}
-												onClick={() => {
-													this.toggle('Process');
-												}}
-											>
-												Process
-											</NavLink>
-										</NavItem>
-									</Nav>
-									<TabContent activeTab={this.state.selected}>
-										<TabPane tabId="System">
-											{renderPage()}
-										</TabPane>
-										<TabPane tabId="Process">
-											<ProcessApp macA={macA} />
-										</TabPane>
-									</TabContent>
-								</div>
-							</div>
-						</div>
-					</Col>
-				</Row>
-			</Container>
+			<div>
+				<Nav tabs justified>
+					<NavItem>
+						<NavLink
+							className={classnames({
+								active: this.state.selected === 'System',
+							})}
+							onClick={() => {
+								this.toggle('System');
+							}}
+						>
+							System
+						</NavLink>
+					</NavItem>
+					<NavItem>
+						<NavLink
+							className={classnames({
+								active: this.state.selected === 'Process',
+							})}
+							onClick={() => {
+								this.toggle('Process');
+							}}
+						>
+							Process
+						</NavLink>
+					</NavItem>
+				</Nav>
+				<TabContent activeTab={this.state.selected}>
+					<TabPane tabId="System">{renderPage()}</TabPane>
+					<TabPane tabId="Process">
+						<ProcessApp macA={macA} />
+					</TabPane>
+				</TabContent>
+			</div>
 		);
 	}
 }

@@ -56,6 +56,10 @@ function socketMain(io, socket, worker) {
 		socket.on(macA, (processData) => {
 			io.to('ui').emit(macA, processData);
 		});
+		socket.on(`${macA}-processDetails`, (processDetailsData) => {
+			// console.log(processDetailsData);
+			io.to('ui').emit(`${macA}-processDetailsData`, processDetailsData);
+		});
 	});
 
 	// console.log(`Mac address: ${this.macA}`);
@@ -68,28 +72,20 @@ function socketMain(io, socket, worker) {
 		io.to('ui').emit('processData', data);
 	});
 
-	// creating a event based on 'macA' so that
+	// creating a event using 'macA' so that
 	// client can communicate to the system based on
 	// their mac address.
+	// to terminate process.
 	socket.on('systemInfo', (data) => {
-		console.log(data);
+		// console.log(data);
 		macA = `${data.macA}-client`;
-		// console.log(typeof macA);
-
-		// receive process details on an event with
-		// that system's 'macA'
-		// socket.on(macA, (processInfo) => {
-		// 	// io.to('ui').emit(`${macA}`, processInfo);
-		// 	console.log('processInfo');
-		// });
-
 		io.emit(macA, data);
+	});
 
-		// client sends data to nodeClient.
-		// await socket.on(`${macA}-client`, (pid) => {
-		// 	console.log(`Received process termination request from: ${macA}`);
-		// 	io.emit(`${macA}-server`, pid);
-		// });
+	socket.on('selectedProcess', (data) => {
+		console.log(data);
+		macA = `${data.macA}-process`;
+		io.emit(macA, data);
 	});
 
 	socket.on('test', (data) => {

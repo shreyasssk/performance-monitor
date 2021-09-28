@@ -1,8 +1,11 @@
 const os = require('os');
 const io = require('socket.io-client');
-let socket = io('https://socket-server-pm.herokuapp.com');
+const { clearInterval } = require('timers');
+let socket = io('http://localhost:4000');
+
 const performanceData = require('./components/performanceData');
 const processData = require('./components/processData');
+const selectedProcess = require('./components/selectedProcess');
 const processTerminate = require('./components/terminateProcess');
 
 // identify machine for unique marking, use mac address.
@@ -53,6 +56,10 @@ socket.on('connect', () => {
 		processData().then((data) => {
 			socket.emit(macA, data);
 		});
+
+		// selectedProcess().then((data) => {
+		// 	socket.emit(`${macA}-process`, data);
+		// });
 	}, 1000);
 
 	socket.on('disconnect', () => {
@@ -64,4 +71,33 @@ const macB = `${macA}-client`;
 socket.on(macB, (data) => {
 	console.log(`Received process terminate request from: ${data.macA}`);
 	processTerminate(data.pid);
+});
+
+let arr = [];
+const macC = `${macA}-process`;
+socket.on(macC, (data) => {
+	// console.log(data);
+
+	if (arr.length > 0) {
+		clearInterval(arr[0]);
+		clearInterval(arr[1]);
+		arr.shift();
+	}
+	arr.push(
+		setInterval(() => {
+			selectedProcess(data.pid)
+				.then((processDetails) => {
+					// console.log(processDetails);
+					socket.emit(`${macA}-processDetails`, processDetails);
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+			// console.log(arr.length);
+		}, 1000)
+	);
+
+	socket.on('disconnect', () => {
+		clearInterval(processInterval);
+	});
 });

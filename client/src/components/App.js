@@ -32,11 +32,32 @@ class App extends React.Component {
 
 	render() {
 		let widgets = [];
+
 		const data = this.state.performanceData;
 		Object.entries(data).forEach(([key, value]) => {
 			// console.log(value);
-			widgets.push(<Dashboard key={key} data={value} />);
+			widgets.push(
+				<Container
+					key={key}
+					fluid
+					className="main-content-container px-4"
+				>
+					<Row>
+						<Col className="col-lg mb-4">
+							<div className="card">
+								<div className="card-body">
+									<div className="card-title">
+										<h5>System ID: {key}</h5>
+									</div>
+									<Dashboard key={key} data={value} />
+								</div>
+							</div>
+						</Col>
+					</Row>
+				</Container>
+			);
 		});
+
 		return (
 			<Container fluid className="main-content-container px-4">
 				<Row>
@@ -51,7 +72,9 @@ class App extends React.Component {
 								System Performance Metrics
 							</h1>
 						</div>
-						<div style={{ padding: '5px' }}>{widgets}</div>
+						<div style={{ padding: '5px' }}>
+							<div style={{ padding: '5px' }}>{widgets}</div>
+						</div>
 					</Col>
 				</Row>
 			</Container>

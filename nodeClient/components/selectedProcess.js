@@ -1,6 +1,6 @@
 const { snapshot } = require('process-list');
 
-function processData() {
+const selectedProcess = (x) => {
 	return new Promise(async (resolve, reject) => {
 		const tasks = await snapshot(
 			'pid',
@@ -19,12 +19,12 @@ function processData() {
 			'stime'
 		);
 		let data = await tasks.filter((e) => {
-			return e.name !== '';
+			return e.pid === x;
 		});
 
 		resolve(data);
 		reject('Error: Process-Data');
 	});
-}
+};
 
-module.exports = processData;
+module.exports = selectedProcess;

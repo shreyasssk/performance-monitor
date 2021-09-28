@@ -1,64 +1,100 @@
 import React from 'react';
 import Chart from 'react-apexcharts';
+import ApexCharts from 'apexcharts';
+import socket from '../../../socket/socketConnection';
 
 class ProcessCpuGraph extends React.Component {
 	constructor(props) {
 		super(props);
 
 		this.state = {
+			selectedProcess: {},
 			options: {
 				chart: {
 					id: 'cpugraph',
-					height: 280,
-					type: 'radialBar',
-				},
-				colors: ['#20E647'],
-				plotOptions: {
-					radialBar: {
-						startAngle: -135,
-						endAngle: 135,
-						track: {
-							background: '#333',
-							startAngle: -135,
-							endAngle: 135,
-						},
-						dataLabels: {
-							name: {
-								show: true,
-							},
-							value: {
-								fontSize: '30px',
-								show: true,
-							},
+					animations: {
+						enabled: true,
+						easing: 'linear',
+						dynamicAnimation: {
+							speed: 1000,
 						},
 					},
-				},
-				fill: {
-					type: 'gradient',
-					gradient: {
-						shade: 'dark',
-						type: 'horizontal',
-						gradientToColors: ['#87D4F9'],
-						stops: [0, 100],
+					toolbar: {
+						show: false,
 					},
+					zoom: {
+						enabled: false,
+					},
+				},
+
+				dataLabels: {
+					enabled: false,
 				},
 				stroke: {
-					lineCap: 'butt',
+					curve: 'smooth',
 				},
-				labels: ['CPU'],
+				title: {
+					text: 'Free CPU [%] ',
+					align: 'left',
+				},
+				markers: {
+					size: 0,
+				},
+				xaxis: {
+					type: 'datetime',
+					range: 10,
+				},
+				legend: {
+					show: false,
+				},
 			},
+			series: [{ name: 'freemem', data: [] }],
 		};
 	}
 
+	componentDidMount() {
+		this._fetchData = true;
+		const { macA } = this.props;
+		socket.on(`${macA}-processDetailsData`, (data) => {
+			if (this._fetchData) {
+				// console.log(data[0]);
+				const x = Math.round(data[0].cpu).toFixed(2);
+				this.updateData(x);
+			}
+		});
+	}
+
+	resetData = () => {
+		const { data } = this.state.series[0];
+
+		this.setState({
+			series: [{ data: data.slice(data.length - 10, data.length) }],
+		});
+	};
+
+	updateData = (y) => {
+		const x = Math.floor(new Date().getTime() / 1000);
+
+		let { data } = this.state.series[0];
+		data.push({ x, y });
+
+		this.setState({ series: [{ data }] }, () => {
+			ApexCharts.exec('cpugraph', 'updateSeries', this.state.series);
+		});
+
+		// stop data array from leaking memory and growing too big
+		if (data.length > 100) this.resetData();
+	};
+
 	render() {
-		const { options } = this.state;
+		const { options, series } = this.state;
 		const { newData } = this.props;
 
 		if (newData.length === 0) {
 			return <div></div>;
 		}
 
-		const series = Math.round(newData[0].cpu * 1000) / 1000;
+		// const series = Math.round(newData[0].cpu * 1000) / 1000;
 
 		return (
 			<div className="card">
@@ -66,8 +102,8 @@ class ProcessCpuGraph extends React.Component {
 					<h5>CPU Graph</h5>
 					<Chart
 						options={options}
-						series={[series]}
-						type="radialBar"
+						series={series}
+						type="line"
 						height="350"
 					/>
 				</div>

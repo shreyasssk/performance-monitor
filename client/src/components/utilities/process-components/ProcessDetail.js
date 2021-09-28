@@ -3,10 +3,36 @@ import { Button } from 'shards-react';
 import socket from '../../../socket/socketConnection';
 
 class ProcessDetail extends React.Component {
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			selectedProcess: {},
+		};
+	}
+
+	componentDidMount() {
+		this._fetchData = true;
+		const { macA } = this.props;
+		socket.on(`${macA}-processDetailsData`, (data) => {
+			if (this._fetchData) {
+				// console.log(data[0]);
+				this.setState({
+					selectedProcess: data[0],
+				});
+			}
+		});
+	}
+
+	componentWillUnmount() {
+		this._fetchData = false;
+	}
+
 	renderPage() {
 		const { data, macA } = this.props;
+		const { selectedProcess } = this.state;
 
-		if (data.length === 0) {
+		if (Object.keys(selectedProcess).length === 0) {
 			return (
 				<div>
 					<h4>No process selected</h4>
@@ -23,25 +49,25 @@ class ProcessDetail extends React.Component {
 
 		return (
 			<div>
-				<h4>Name: {data[0].name}</h4>
+				<h4>Name: {selectedProcess.name}</h4>
 				<p>
-					OWNER: {data[0].owner} <br />
-					PID: {data[0].pid} <br />
-					PPID: {data[0].ppid} <br />
-					PATH: {data[0].path} <br />
-					THREADS: {data[0].threads} <br />
-					PRIORITY: {data[0].priority} <br />
-					CMDLINE: {data[0].cmdline} <br />
-					UPTIME: {data[0].utime} <br />
+					OWNER: {selectedProcess.owner} <br />
+					PID: {selectedProcess.pid} <br />
+					PPID: {selectedProcess.ppid} <br />
+					PATH: {selectedProcess.path} <br />
+					THREADS: {selectedProcess.threads} <br />
+					PRIORITY: {selectedProcess.priority} <br />
+					CMDLINE: {selectedProcess.cmdline} <br />
+					UPTIME: {selectedProcess.utime} <br />
 					<span style={{ fontWeight: 'bold' }}>
-						MEMORY: {Math.round(data[0].pmem / 1000)}kB
+						MEMORY: {Math.round(selectedProcess.pmem / 1000)}kB
 						<br />
-						CPU: {data[0].cpu} % <br />
+						CPU: {selectedProcess.cpu} % <br />
 					</span>
 				</p>
 				<Button
 					onClick={onTerminate}
-					value={data[0].pid}
+					value={selectedProcess.pid}
 					size="lg"
 					theme="danger"
 				>
