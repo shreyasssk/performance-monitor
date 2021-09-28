@@ -34,7 +34,28 @@ class App extends React.Component {
 		let widgets = [];
 		const data = this.state.performanceData;
 		Object.entries(data).forEach(([key, value]) => {
-			widgets.push(<Dashboard key={key} data={value} />);
+			widgets.push(
+				<Container
+					key={key}
+					fluid
+					className="main-content-container px-4"
+				>
+					<Row>
+						<Col className="col-lg mb-4">
+							<div style={{ padding: '5px' }}>
+								<div className="card">
+									<div className="card-body">
+										<div className="card-title">
+											<h5>System ID: {key}</h5>
+										</div>
+										<Dashboard key={key} data={value} />
+									</div>
+								</div>
+							</div>
+						</Col>
+					</Row>
+				</Container>
+			);
 		});
 		return (
 			<Container fluid className="main-content-container px-4">
