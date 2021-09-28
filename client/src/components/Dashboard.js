@@ -3,6 +3,7 @@ import { TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
 import classnames from 'classnames';
 
 import SystemApp from './SystemApp';
+import ProcessApp from './ProcessApp';
 
 class Dashboard extends React.Component {
 	constructor() {
@@ -111,7 +112,9 @@ class Dashboard extends React.Component {
 											/> */}
 						{renderPage()}
 					</TabPane>
-					<TabPane tabId="Process">{processWidget}</TabPane>
+					<TabPane tabId="Process">
+						<ProcessApp macA={macA} />
+					</TabPane>
 				</TabContent>
 			</div>
 		);
