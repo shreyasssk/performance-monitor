@@ -1,5 +1,4 @@
 import { snapshot, SnapshotType } from 'process-list';
-import psList from 'ps-list';
 
 let processData = async () => {
 	return new Promise<SnapshotType>(async (resolve, reject) => {
@@ -23,10 +22,9 @@ let processData = async () => {
 		var data: SnapshotType = tasks.filter((e: SnapshotType) => {
 			return e.name !== '';
 		});
-		console.log(await psList());
 		resolve(data);
 
-		reject('Error occured!');
+		reject(tasks);
 	});
 };
 
