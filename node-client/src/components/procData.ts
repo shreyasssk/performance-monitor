@@ -1,7 +1,8 @@
-import { snapshot, snapshotType } from 'process-list';
+import { snapshot, SnapshotType } from 'process-list';
+import psList from 'ps-list';
 
 let processData = async () => {
-	try {
+	return new Promise<SnapshotType>(async (resolve, reject) => {
 		let tasks = await snapshot(
 			'pid',
 			'ppid',
@@ -19,13 +20,14 @@ let processData = async () => {
 			'stime'
 		);
 
-		var data = tasks.filter((e: snapshotType) => {
+		var data: SnapshotType = tasks.filter((e: SnapshotType) => {
 			return e.name !== '';
 		});
-		return new Promise<snapshotType>(data);
-	} catch (err) {
-		console.log('Process-List', err);
-	}
+		console.log(await psList());
+		resolve(data);
+
+		reject('Error occured!');
+	});
 };
 
 export { processData };
