@@ -1,10 +1,21 @@
 require('dotenv').config();
 import mongoose, { Condition, CallbackError } from 'mongoose';
 import { Server, Socket } from 'socket.io';
+import cookieSession from 'cookie-session';
 
 import { Machine, MachineDoc } from '../models/Machine';
 
+const sessionMiddleware = cookieSession({
+	maxAge: 30 * 24 * 60 * 60 * 1000,
+	keys: [String(process.env.SECRET_KEY)],
+	signed: false,
+});
+
 (async function () {
+	if (!process.env.SECRET_KEY) {
+		throw new Error('SECRET_KEY not defined!');
+	}
+
 	if (!process.env.MONGO_URI) {
 		throw new Error('MONGO_URI not specified!');
 	}
@@ -12,16 +23,19 @@ import { Machine, MachineDoc } from '../models/Machine';
 	try {
 		await mongoose.connect(process.env.MONGO_URI);
 		console.log('connected to MongoDB');
-	} catch (err) {
-		console.log(err);
+	} catch (err: any) {
+		throw new Error(err);
 	}
 })();
 
 function socketMain(io: Server, socket: Socket) {
 	let macA: Condition<string>;
 
+	console.log('Headers', socket.request.headers.cookie);
+	console.log('Handshake', socket.handshake.headers.cookie);
+
 	socket.on('clientAuth', (key) => {
-		if (key === 'W7u7XZ2WCdf3U1N8T6dWLzI70Ug=') {
+		if (key === 'clientAuth') {
 			// valid UI client joined
 			socket.join('ui');
 			console.log('React client joined!');

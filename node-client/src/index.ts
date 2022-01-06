@@ -3,7 +3,8 @@ import io from 'socket.io-client';
 let socket = io('http://127.0.0.1:4000');
 
 import { performanceData } from './components/perfData';
-import { processData } from './components/procData';
+// import { processData } from './components/procData';
+import { sysInfo } from './components/systemInfo';
 
 socket.on('connect', () => {
 	console.log('connected to socket server!');
@@ -27,20 +28,31 @@ socket.on('connect', () => {
 	});
 
 	// start sending data on interval
-	let perfDataInterval = setInterval(() => {
-		performanceData().then((data) => {
-			data.macA = macA;
-			socket.emit('perfData', data);
-		});
-	}, 1000);
+	// let perfDataInterval = setInterval(() => {
+	// 	performanceData().then((data) => {
+	// 		data.macA = macA;
+	// 		socket.emit('perfData', data);
+	// 	});
+	// }, 1000);
 
-	let procData = setInterval(() => {
-		processData()
+	// let procData = setInterval(() => {
+	// 	processData()
+	// 		.then((data) => {
+	// 			let x = {};
+	// 			let systemMac: any = { ...x };
+	// 			systemMac[macA] = data;
+	// 			socket.emit('processData', systemMac);
+	// 		})
+	// 		.catch((err) => {
+	// 			throw err;
+	// 		});
+	// }, 1000);
+
+	let systemInfoInterval = setInterval(() => {
+		sysInfo()
 			.then((data) => {
-				let x = {};
-				let systemMac: any = { ...x };
-				systemMac[macA] = data;
-				socket.emit('processData', systemMac);
+				data.macA = macA;
+				socket.emit('perfData', data);
 			})
 			.catch((err) => {
 				throw err;
@@ -48,7 +60,8 @@ socket.on('connect', () => {
 	}, 1000);
 
 	socket.on('disconnect', () => {
-		clearInterval(perfDataInterval);
-		clearInterval(procData);
+		// clearInterval(perfDataInterval);
+		// clearInterval(procData);
+		clearInterval(systemInfoInterval);
 	});
 });
